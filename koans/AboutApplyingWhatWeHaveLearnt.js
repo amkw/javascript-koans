@@ -30,15 +30,22 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(productsICanEat.length).toBe(FILL_ME_IN);
+    expect(productsICanEat.length).toBe(1);
   });
 
   it("given I'm allergic to nuts and hate mushrooms, it should find a pizza I can eat (functional)", function () {
       var productsICanEat = [];
 
       /* solve using filter() & all() / any() */
+      var isMushrooms = function(ingredient) { 
+        return ingredient === 'mushrooms';
+      };
 
-      expect(productsICanEat.length).toBe(FILL_ME_IN);
+      productsICanEat = _(products).filter(function(pizza) { return !pizza.containsNuts} );
+      productsICanEat = _(productsICanEat).filter(function(pizza) { 
+        return !_(pizza.ingredients).any(isMushrooms); } ); 
+
+      expect(productsICanEat.length).toBe(1);
   });
 
   /*********************************************************************************/
@@ -52,13 +59,22 @@ describe("About Applying What We Have Learnt", function() {
       }
     }
     
-    expect(sum).toBe(FILL_ME_IN);
+    expect(sum).toBe(233168);
   });
 
   it("should add all the natural numbers below 1000 that are multiples of 3 or 5 (functional)", function () {
-    var sum = FILL_ME_IN;    /* try chaining range() and reduce() */
+    var sum = _(_.range(1,1000)).reduce(
+      function(memo, x) {
+        if(x % 3 === 0 || x % 5 === 0){
+          return memo + x;
+        }
+        return memo;
+      },
+      /* initial */ 0
+    );    
+    /* try chaining range() and reduce() */
 
-    expect(233168).toBe(FILL_ME_IN);
+    expect(233168).toBe(sum);
   });
 
   /*********************************************************************************/
@@ -71,16 +87,36 @@ describe("About Applying What We Have Learnt", function() {
         }
     }
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
 
   it("should count the ingredient occurrence (functional)", function () {
     var ingredientCount = { "{ingredient name}": 0 };
 
     /* chain() together map(), flatten() and reduce() */
+    ingredientCount = _(products).chain()
+                        .map(function(pizza) { return pizza.ingredients; })
+                        .flatten()
+                        .reduce(function(obj, ingredient) {
+                          if (obj[ingredient] != undefined) {
+                            obj[ingredient] = obj[ingredient] + 1;  
+                          } else {
+                            obj[ingredient] = 1;
+                          }
 
-    expect(ingredientCount['mushrooms']).toBe(FILL_ME_IN);
+                          return obj;
+                        }, {})
+                        .value();
+
+    expect(ingredientCount['mushrooms']).toBe(2);
   });
+
+  // what we have: array of objects with properties. we care about one property: ingredients
+  // map: to turn array of objects -> array of ingredient arrays
+  // flatten: take 2D array and flatten into a single array with all combined ingredients. mushrooms can appear multiple times
+  // reduce: array of strings into frequency counts
+
+  // what we want: object with keys that are ingredients, and values are the frequency
 
   /*********************************************************************************/
   /* UNCOMMENT FOR EXTRA CREDIT */
